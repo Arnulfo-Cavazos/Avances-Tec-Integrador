@@ -1,0 +1,12 @@
+imagenes_jpg/
+vetlife-yolo-*/
+*.HEIC
+*.heic
+*.JPG
+*.jpg
+*.JPEG
+*.jpeg
+*.png
+*.zip
+.ipynb_checkpoints/
+__pycache__/
