@@ -9,6 +9,8 @@ Proyecto académico de preparación de datos para un sistema de conteo de produc
 
 - **Avance 3 — Baseline:** modelo de referencia para identificar el producto de cada caja (676 recortes anotados en 44 fotos, 44 clases) y propagarlo al conteo por producto. Compara referencias triviales, regresión logística y bosque aleatorio sobre 92 características por objeto (color, distribución de color, forma y textura), con validación cruzada agrupada por foto, análisis de sub/sobreajuste, importancia de características (filtro, embebido, envoltura, permutación y PCA) y metas de desempeño. En una prueba fija de 10 fotos el baseline alcanza macro-F1 de 0.169; en validación cruzada, 0.349 ± 0.067 (azar: 0.017). Identifica la marca el 92.5 % de las veces pero el producto exacto solo el 42.8 %, así que sirve como piso y no como solución.
 
+- **Avance 4 — Modelos alternativos:** compara 8 algoritmos individuales (regresión logística, SVM lineal y RBF, k vecinos, árbol de decisión, Naive Bayes, análisis discriminante lineal y MLP; sin ensambles) sobre 5 representaciones de cada producto recortado (92 características a mano, *embeddings* de MobileNetV3 y de ConvNeXt-Tiny congeladas, y sus combinaciones), con validación cruzada agrupada por foto. Ajusta los dos mejores con búsqueda aleatoria en dos rondas (140 configuraciones, 700 ajustes por modelo) y elige como modelo final una regresión logística sobre las características a mano + ConvNeXt-Tiny (macro-F1 de validación cruzada 0.544 ± 0.128 frente a 0.382 del baseline del Avance 3; en la prueba fija de 10 fotos, 0.253 frente a 0.169). La mejora viene sobre todo de la representación, no del algoritmo ni del ajuste de hiperparámetros, y la prueba es demasiado pequeña para afirmar significancia estadística.
+
 Los notebooks incluyen sus resultados ejecutados. El Avance 2 se basa en la colección de fotos actualizada. Las fotografías actuales no traen etiquetas YOLO asociadas en esta carpeta, así que sus características describen la calidad visual y no sustituyen las cajas o máscaras requeridas para entrenar un detector.
 
 ## Datos y privacidad
@@ -25,5 +27,7 @@ Instala las dependencias de `requirements.txt` y ejecuta las celdas en orden des
 - Para **Avance 2**, coloca la carpeta de imágenes JPG convertidas en `imagenes_jpg/`, junto a los notebooks. Esos archivos no se distribuyen en este repositorio.
 
 - Para **Avance 3**, coloca localmente `label_data/` (fotos anotadas), la carpeta `Zproyect_Main/01_datos/exportaciones_label_studio/` (una subcarpeta con fecha por exportación de Label Studio) y, opcionalmente, `Zproyect_Main/Fotos_de_referencia/`, junto al notebook o en su carpeta padre. El notebook las busca solo. Se ejecuta de principio a fin y deja la lista de fotos de prueba en `avance3_fotos_prueba.csv` para reutilizar la misma partición en los siguientes modelos.
+
+- Para **Avance 4**, se necesitan los mismos datos que el Avance 3 y, además, `torch` y `torchvision` (para extraer *embeddings* con pesos preentrenados, que se descargan la primera vez) y `joblib`. En CPU tarda unos 15–20 minutos de principio a fin.
 
 Requisitos sugeridos: Python 3.10 o posterior. No se debe ajustar PCA, escaladores o transformaciones con datos de validación/prueba en una evaluación predictiva; se ajustan sólo con entrenamiento.
